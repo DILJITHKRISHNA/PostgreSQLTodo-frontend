@@ -17,7 +17,8 @@ function ListTodo() {
     useEffect(() => {
         const getAllTodo = async () => {
             try {
-                const response = await fetch('http://localhost:3000/todos', {
+                // const response = await fetch('http://localhost:3000/todos', {
+                const response = await fetch('https://xerotodo.onrender.com', {
                     method: 'GET',
                     headers: { 'Content-Type': 'application/json' },
                 });
@@ -50,7 +51,8 @@ function ListTodo() {
 
     const handleDelete = async (id) => {
         try {
-            const response = await fetch(`http://localhost:3000/todos/${id}`, {
+            // const response = await fetch(`http://localhost:3000/todos/${id}`, {
+            const response = await fetch(`https://xerotodo.onrender.com/${id}`, {
                 method: 'DELETE',
             });
             if (response.ok) {

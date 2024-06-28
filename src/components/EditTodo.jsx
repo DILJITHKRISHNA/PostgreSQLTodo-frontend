@@ -14,7 +14,8 @@ function EditTodo({ description, setTodo, todo, todoId }) {
         console.log(todoId, "todo iddd");
         const body = { Description }
         console.log(body,"bodyyyy");
-        const response = await fetch(`http://localhost:3000/todos/${todoId}`, {
+        // const response = await fetch(`http://localhost:3000/todos/${todoId}`, {
+        const response = await fetch(`https://xerotodo.onrender.com/${todoId}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(body)
