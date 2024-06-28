@@ -17,14 +17,12 @@ function ListTodo() {
     useEffect(() => {
         const getAllTodo = async () => {
             try {
-                // const response = await fetch('http://localhost:3000/todos', {
-                const response = await fetch('https://xerotodo.onrender.com/todos', {
+                const response = await fetch('http://localhost:3000/todos', {
                     method: 'GET',
                     headers: { 'Content-Type': 'application/json' },
                 });
                 const data = await response.json();
                 if (Array.isArray(data.rows)) {
-                    // Initialize the done state for each todo item
                     const todosWithDoneState = data.rows.map(todo => ({ ...todo, done: false }));
                     setTodos(todosWithDoneState);
                 }
@@ -33,14 +31,14 @@ function ListTodo() {
             }
         };
         getAllTodo();
-    }, []);
+    }, [todos]);
 
     const handleCheckBox = (todo_id) => {
-        setTodos(prevTodos => 
+        setTodos(prevTodos =>
             prevTodos.map(todo => {
                 if (todo.todo_id === todo_id) {
                     const updatedTodo = { ...todo, done: !todo.done };
-                    setCompletedCount(updatedTodo.done ? completedCount+1 : completedCount - 1);
+                    setCompletedCount(updatedTodo.done ? completedCount + 1 : completedCount - 1);
                     return updatedTodo;
                 }
                 return todo;
@@ -48,18 +46,16 @@ function ListTodo() {
         );
     };
 
-
     const handleDelete = async (id) => {
         try {
-            // const response = await fetch(`http://localhost:3000/todos/${id}`, {
-            const response = await fetch(`https://xerotodo.onrender.com/todos/${id}`, {
+            const response = await fetch(`http://localhost:3000/todos/${id}`, {
                 method: 'DELETE',
             });
-            if (response.ok) {
+            if (response.data.success) {
                 setTodos(prevTodos => {
                     const todoToDelete = prevTodos.find(todo => todo.todo_id === id);
                     if (todoToDelete && todoToDelete.done) {
-                        setCompletedCount(prevCount => prevCount - 1);
+                        setCompletedCount(completedCount - 1);
                     }
                     return prevTodos.filter(todo => todo.todo_id !== id);
                 });

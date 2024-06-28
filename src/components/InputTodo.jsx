@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from 'react'
 
-function InputTodo({ setTodo }) {
+function InputTodo({ setTodos }) {
     const [display, setDisplay] = useState("")
 
 
     const handleAddTodo = async (e) => {
         e.preventDefault()
         try {
-            setTodo(display)
+            setTodos(display)
             const body = { display }
-            // const response = await fetch("http://localhost:3000/todos", {
-            const response = await fetch("https://xerotodo.onrender.com/todos", {
+            const response = await fetch("http://localhost:3000/todos", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(body)
