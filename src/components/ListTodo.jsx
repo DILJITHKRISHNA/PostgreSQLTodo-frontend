@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import InputTodo from './InputTodo';
-import { FaEdit } from 'react-icons/fa'
-import { MdOutlineDeleteSweep } from "react-icons/md";
+import { FaEdit } from 'react-icons/fa';
+import { MdOutlineDeleteSweep } from 'react-icons/md';
+import EditTodo from './EditTodo';
 
 function ListTodo() {
     const [colorIndex, setColorIndex] = useState(0);
-    const [todo, setTodo] = useState([])
-    const [done, setDone] = useState(false)
-
+    const [todos, setTodos] = useState([]);
+    const [completedCount, setCompletedCount] = useState(0);
     const colors = ['black', '#FF5631', '#CEBEA4'];
 
     const handleBgcolor = () => {
@@ -17,39 +17,55 @@ function ListTodo() {
     useEffect(() => {
         const getAllTodo = async () => {
             try {
-                const response = await fetch("http://localhost:3000/todos", {
-                    method: "GET",
-                    headers: { "Content-Type": "application/json" },
+                const response = await fetch('http://localhost:3000/todos', {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' },
                 });
                 const data = await response.json();
                 if (Array.isArray(data.rows)) {
-                    setTodo(data.rows)
+                    // Initialize the done state for each todo item
+                    const todosWithDoneState = data.rows.map(todo => ({ ...todo, done: false }));
+                    setTodos(todosWithDoneState);
                 }
             } catch (error) {
                 console.log(error.message);
             }
-        }
-        getAllTodo()
-    }, [todo])
+        };
+        getAllTodo();
+    }, []);
 
+    const handleCheckBox = (todo_id) => {
+        setTodos(prevTodos => 
+            prevTodos.map(todo => {
+                if (todo.todo_id === todo_id) {
+                    const updatedTodo = { ...todo, done: !todo.done };
+                    setCompletedCount(updatedTodo.done ? completedCount+1 : completedCount - 1);
+                    return updatedTodo;
+                }
+                return todo;
+            })
+        );
+    };
 
-    const handleCheckBox = (index) => {
-        setDone(!done)
-        const newTodos = [...todo];
-        newTodos[index].done = !newTodos[index].done;
-        setTodo(newTodos);
-    }
 
     const handleDelete = async (id) => {
         try {
             const response = await fetch(`http://localhost:3000/todos/${id}`, {
-                method: "DELETE",
+                method: 'DELETE',
             });
-            console.log(response, "response of deleting");
+            if (response.ok) {
+                setTodos(prevTodos => {
+                    const todoToDelete = prevTodos.find(todo => todo.todo_id === id);
+                    if (todoToDelete && todoToDelete.done) {
+                        setCompletedCount(prevCount => prevCount - 1);
+                    }
+                    return prevTodos.filter(todo => todo.todo_id !== id);
+                });
+            }
         } catch (error) {
             console.log(error.message);
         }
-    }
+    };
 
     return (
         <div className='min-h-screen flex flex-col gap-3 items-center justify-center p-4' style={{ backgroundColor: colors[colorIndex] }}>
@@ -66,25 +82,25 @@ function ListTodo() {
                     <div className="text-[#CEBEA4] font-bold text-2xl mb-2">Todo Done</div>
                     <div className="text-[#CEBEA4] text-sm mb-6">keep it up</div>
                     <div className="bg-[#FF5631] text-black text-2xl font-bold rounded-full w-16 h-16 mx-auto flex items-center justify-center">
-                        1/3
+                        {completedCount}/{todos.length}
                     </div>
                 </div>
-                <InputTodo setTodo={setTodo} />
+                <InputTodo setTodos={setTodos} />
             </div>
-            {Array.isArray(todo) && todo.map((data) => (
-                <div key={data.todo_id} className="flex flex-row items-center justify-between bg-black rounded-2xl p-6 max-w-lg w-full border-2 border-white">
+            {Array.isArray(todos) && todos.map((data) => (
+                <div key={data.todo_id} className="flex flex-row items-center justify-between bg-black rounded-2xl p-6 max-w-lg w-full border-2 border-[#CEBEA4]">
                     <div className='flex flex-row gap-4'>
-                        <input type="checkbox" onClick={()=>handleCheckBox(data.todo_id)} />
-                        <h1 className={`text-white font-bold ${done === true  ? 'line-through' : ''}`}>{data.description}</h1>
+                        <input type="checkbox" checked={data.done} onChange={() => handleCheckBox(data.todo_id)} />
+                        <h1 className={`text-white font-bold ${data.done ? 'line-through' : ''}`}>{data.description}</h1>
                     </div>
                     <div className='flex flex-row gap-4'>
-                        <FaEdit className='text-white text-xl' />
-                        <MdOutlineDeleteSweep className='text-white text-xl' onClick={() => handleDelete(data?.todo_id)} />
+                        <EditTodo description={data.description} todoId={data.todo_id} setTodos={setTodos} todos={todos} />
+                        <MdOutlineDeleteSweep className='text-white text-2xl' onClick={() => handleDelete(data.todo_id)} />
                     </div>
                 </div>
             ))}
         </div>
-    )
+    );
 }
 
-export default ListTodo
+export default ListTodo;
