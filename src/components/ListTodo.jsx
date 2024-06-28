@@ -18,7 +18,7 @@ function ListTodo() {
         const getAllTodo = async () => {
             try {
                 // const response = await fetch('http://localhost:3000/todos', {
-                const response = await fetch('https://xerotodo.onrender.com', {
+                const response = await fetch('https://xerotodo.onrender.com/todos', {
                     method: 'GET',
                     headers: { 'Content-Type': 'application/json' },
                 });

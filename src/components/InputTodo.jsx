@@ -10,7 +10,7 @@ function InputTodo({ setTodo }) {
             setTodo(display)
             const body = { display }
             // const response = await fetch("http://localhost:3000/todos", {
-            const response = await fetch("https://xerotodo.onrender.com", {
+            const response = await fetch("https://xerotodo.onrender.com/todos", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(body)
